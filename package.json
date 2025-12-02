@@ -19,7 +19,7 @@
     "debug": "~2.6.9",
     "dotenv": "^16.0.3",
     "ejs": "~2.6.1",
-    "express": "^5.0.0-beta.1",
+    "express": "^5.2.0",
     "express-fileupload": "^1.4.0",
     "express-list-routes": "^1.1.5",
     "http-errors": "~1.6.3",
