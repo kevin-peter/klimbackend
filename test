@@ -1,0 +1,6 @@
+// SSLCertificateFile      /etc/ssl/certs/ssl-cert-snakeoil.pem
+// SSLCertificateKeyFile   /etc/ssl/private/ssl-cert-snakeoil.key
+
+
+Certificate is saved at: /etc/letsencrypt/live/royalrunbet.com/fullchain.pem
+Key is saved at:         /etc/letsencrypt/live/royalrunbet.com/privkey.pem

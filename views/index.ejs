@@ -1,0 +1,647 @@
+<html lang="en">
+
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css"
+    integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+  <script crossorigin="anonymous"
+    integrity="sha512-Y8KodDCDqst1e8z0EGKiqEQq3T8NszmgW2HvsC6+tlNw7kxYxHTLl5Iw/gqZj/6qhZdBt+jYyOsybgSAiB9OOA=="
+    referrerpolicy="no-referrer" src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.4.0/socket.io.js">
+    </script>
+  <style>
+    body {
+      background-color: #000;
+      color: #000;
+
+    }
+
+    .container {
+      background-color: #fff9d7;
+      height: 95vh;
+      overflow: auto;
+      border: solid 10px #eedd82;
+    }
+
+    input,
+    select {
+      padding-left: 10px;
+      margin-right: 30px;
+      font-weight: 700;
+      background-color: #eedd82 !important;
+      height: 30px;
+      border: solid 2px #000;
+    }
+
+    button {
+      font-weight: 700 !important;
+    }
+
+    select:focus,
+    input:focus {
+      outline: 0 !important;
+      border: 0 !important;
+      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+      background-color: #fff !important;
+    }
+
+    button:hover {
+      box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15) !important;
+      background-color: white !important;
+      color: #000 !important;
+      transition-duration: 0.05s;
+      transform: scale(1.05);
+    }
+
+    button:active {
+      transition-duration: 0.05s;
+      transform: scale(0.95)
+    }
+
+
+    input.small-w {
+      max-width: 40px;
+    }
+
+    input[type=number].small-w {
+      max-width: 68px;
+    }
+
+    input.midum-w {
+      max-width: 60px;
+    }
+
+    .label {
+      font-weight: 800;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container mt-2 mb-3 p-3">
+    <div class="col-12">
+      <form onsubmit="return false">
+        <label class="label">Active Inning :</label>
+        <select autofocus id="ing" class="border-top-0 border-right-0 border-left-0" required>
+          <option value="">select inning</option>
+          <option value="h1">Home Team 1st</option>
+          <option value="a1">Away Team 1st</option>
+          <option value="h2">Home Team 2nd</option>
+          <option value="a2">Away Team 2nd</option>
+        </select>
+        <label class="label">Home Team : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="h" placeholder="Home Team" />
+        <label class="label">Away Team : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="a" placeholder="Away Team" />
+        <div style="clear:both" class="mt-2"></div>
+        <label class="label">Run : </label>
+        <input required class="border-top-0 border-right-0 border-left-0 midum-w" type="text" id="run"
+          placeholder="Run " />
+        <label class="label">Wicket : </label>
+        <input required class="border-top-0 border-right-0 border-left-0 small-w" type="number" id="w"
+          placeholder="W " />
+        <label class="label">Over : </label>
+        <input required class="border-top-0 border-right-0 border-left-0 small-w" type="number" id="o"
+          placeholder="O " />
+
+        <label class="label">Ball : </label>
+        <input required class="border-top-0 border-right-0 border-left-0 small-w" type="number" id="b"
+          placeholder="B " />
+
+        <label title="Run Rate" class="label">RR : </label>
+        <input required class="border-top-0 border-right-0 border-left-0 small-w" type="number" step="0.01" id="rr"
+          placeholder="RR " />
+
+        <label title="Run Rate" class="label">RRR : </label>
+        <input class="border-top-0 border-right-0 border-left-0 small-w" type="number" step="0.01" id="rrr"
+          placeholder="RRR " />
+
+        <div style="clear:both" class="mt-2"></div>
+        <label class="label">Striker : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="st" placeholder="Striker " />
+        <label class="label">Non Striker : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="ns"
+          placeholder="Non Striker " />
+        <label class="label">Baller : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="blr"
+          placeholder="Baller Name " />
+        <div style="clear: both;" class="mt-2"></div>
+        <label class="label">Commentry : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="com"
+          placeholder="Ball Chalu" />
+
+        <label class="label">Inning Balls : </label>
+        <input required class="border-top-0 border-right-0 border-left-0" type="text" id="tbls"
+          placeholder="Inning Balls" />
+        <button type="submit" class="btn btn-sm btn-primary m-1">Submit</button>
+        <button type="reset" class="btn btn-danger m-1" onclick="return resetScore()">Reset</button>
+        <button type="button" class="btn btn-danger m-1" onclick="return revertScore()">Revert</button>
+      </form>
+    </div>
+
+    <div class="col-md-12 mt-3">
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(0,0)">0 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(1,0)">1 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(2,0)">2 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(3,0)">3 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(4,0)">4 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(5,0)">5 run </button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(6,0)">6 run </button>
+      <hr class="mt-1" />
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(0,1,'wd')">0 run wide</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(1,1,'wd')">1 run wide</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(2,1,'wd')">2 run wide</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(3,1,'wd')">3 run wide</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(4,1,'wd')">4 run wide</button>
+      <hr class="mt-1" />
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(0,1,'nb')">0 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(1,1,'nb')">1 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(2,1,'nb')">2 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(3,1,'nb')">3 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(4,1,'nb')">4 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(5,1,'nb')">5 run noball</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun(6,1,'nb')">6 run noball</button>
+      <hr class="mt-1" />
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun('0w',0)">wicket</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun('1w',0)">1 & wicket</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun('2w',0)">2 & wicket</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun('3w',0)">3 & wicket</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return passRun('4w',0)">4 & wicket</button>
+      <hr class="mt-1" />
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Ball Chalu')">Ball Chalu</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Review Wicket')">Review Wicket</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Review Boundary')">Review
+        Boundary</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Baller Ruka Hua')">Baller Stop</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Koi Change Nai')">No Change</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Game Stop')">Game Stop</button>
+
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Its Rain')">Rain</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('spinner Aya')">Spinner</button>
+      <button type="button" class="btn btn-dark m-1" onclick="return setComm('Faster Aya')">Faster</button>
+      <hr class="mt-1" />
+
+    </div>
+    <div class="col-md-6 mt-1 float-left" id="l_ball">
+    </div>
+    <div class="col-md-6 mt-1 float-right" id="p_ball">
+    </div>
+    <div style="clear: both;"></div>
+    <p id="ob" style="font-size: 14px;" class="mt-3 d-none"></p>
+  </div>
+</body>
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const MID = urlParams.get('market_id').toString() || "";
+  var socket = io(
+    "", {
+    transports: ["websocket"],
+    upgrade: false
+  }, {
+    secure: true
+  }
+  );
+  socket.on("connection", function () {
+    socket.emit('subscribe_score', {
+      mid: [MID]
+    });
+  })
+  let emt_ob = {
+    "mid": MID,
+    "h": "IND",
+    "a": "SRI",
+    "h1": {
+      "r": 0,
+      "w": 0,
+      "o": 0,
+      "b": 0,
+      "cr": 0,
+      "rr": 0,
+    },
+    "h2": {
+      "r": 0,
+      "w": 0,
+      "o": 0,
+      "b": 0,
+      "cr": 0,
+      "rr": 0
+    },
+    "a1": {
+      "r": 0,
+      "w": 0,
+      "o": 0,
+      "b": 0,
+      "cr": 0,
+      "rr": 0
+    },
+    "a2": {
+      "r": 0,
+      "w": 0,
+      "o": 0,
+      "b": 0,
+      "cr": 0,
+      "rr": 0
+    },
+    "lst": "a1",
+    "act": "h1",
+    "p_o": [],
+    "lb": [],
+    "st": "Virat Kohli",
+    "ns": "Sachin",
+    "bl": "Chamunda Vyas",
+    "com": "Ball Chalu",
+    "tbls": 120
+  }
+  let ob = sessionStorage.getItem("score_" + MID) ? JSON.parse(sessionStorage.getItem("score_" + MID)) : { ...emt_ob };
+
+  let d_obj = document.querySelector("#ob");
+  let l_ball = document.querySelector("#l_ball");
+  let p_ball = document.querySelector("#p_ball");
+
+  let passRun = async (run, ext = 0, wide = '') => {
+    try {
+      if (parseInt(ob[ob.act].b) + parseInt(ob[ob.act].o) * 6 > parseInt(ob.tbls) - 1) {
+        throw new Error("Over Game Or Increser Balls")
+      }
+      let r_st = false;
+
+      if (ob[ob.act].b % 6 == 0 && !wide) {
+        await resetSix()
+      }
+
+      if (w_arr.includes(run)) {
+        wicketDown();
+      }
+
+      if (ext === 0) {
+        addBall(1)
+      }
+
+      if (ob.act in ob && ob[ob.act].b === 6) {
+        await resetBall()
+        await addOver(1)
+        if (run % 2 === 0 && w_arr.indexOf(run) % 2 !== 0) r_st = true;
+      } else {
+        if (run % 2 !== 0 && w_arr.indexOf(run) % 2 !== 0) r_st = true;
+      }
+      if (r_st) rotateStrike();
+      await addLastSix(run + wide)
+      await addRun(run, ext)
+      await addRR(run, ext)
+      await addRRR(run, ext)
+      await setDomObj()
+      await setScore();
+
+    } catch (error) {
+      alert(error)
+    } finally {
+      return;
+    }
+  }
+
+  let rotateStrike = async () => {
+    let st = ob.st;
+    ob.st = ob.ns
+    ob.ns = st;
+    return;
+  }
+
+  let wicketDown = async () => {
+    ob[ob.act].w += 1;
+    return;
+  }
+
+  let addRun = async (r, ext = 0) => {
+    if (ob.act in ob) {
+      ob[ob.act].r = parseInt(ob[ob.act].r) + parseInt(r) + parseInt(ext);
+    }
+    return;
+  }
+
+  let addRR = async (r, ext = 0) => {
+    if (ob.act in ob) {
+      ob[ob.act].cr = parseInt(ob[ob.act].r) * 6 / (parseInt(ob[ob.act].o) * 6 + parseInt(ob[ob.act].b)).toFixed(2)
+      ob[ob.act].cr = Math.round(ob[ob.act].cr * 1e2) / 1e2;
+    }
+    return;
+  }
+
+  let addRRR = async (r, ext = 0) => {
+    if (ob.act in ob) {
+      let run = 0;
+      let ball = 0;
+      let t_r = 0;
+      if (ob.act === 'h1' && parseInt(ob["a1"].r) > 0) {
+        t_r = parseInt(ob["a1"].r) + parseInt(ob["a2"].r);
+      }
+      else if (ob.act === 'a1' && parseInt(ob["h1"].r) > 0) {
+        t_r = parseInt(ob["h1"].r) + parseInt(ob["h2"].r);
+      }
+      run = parseInt(t_r - ob[ob.act].r) + 1;
+      ball = parseInt(parseInt(ob.tbls) - (parseInt(ob[ob.act].o) * 6 + parseInt(ob[ob.act].b)))
+      if (t_r > 0 && parseInt(run * 6 / ball) > 0) {
+        ob[ob.act].rr = run * 6 / ball;
+        ob[ob.act].rr = Math.round(ob[ob.act].rr * 1e2) / 1e2;
+      } else {
+        ob[ob.act].rr = 0;
+      }
+    }
+    return;
+  }
+
+  let addBall = async (ball = 0) => {
+    if (ob.act in ob) {
+      ob[ob.act].b += parseInt(ball);
+    }
+    return;
+  }
+
+  let addOver = async (over = 0) => {
+    ob[ob.act].o += parseInt(over);
+    return;
+  }
+
+  let resetBall = async () => {
+    ob[ob.act].b = 0;
+    return;
+  }
+
+  let changeStriker = async (st = "") => {
+    ob.st = st;
+    return;
+  }
+
+  let changeNoStriker = async (ns = "") => {
+    ob.ns = ns;
+    return;
+  }
+
+  let changeBaller = async (bl = "") => {
+    ob.bl = bl;
+    return;
+  }
+
+  let changeInning = async (act = "") => {
+    ob.act = act;
+    return;
+  }
+
+  let changeHome = async (h = "") => {
+    ob.h = h;
+    return;
+  }
+
+  let changeAway = async (a = "") => {
+    ob.a = a;
+    return;
+  }
+
+  let changeRun = async (a = 0) => {
+    ob[ob.act].r = parseInt(a);
+    return;
+  }
+
+  let changeW = async (a = 0) => {
+    ob[ob.act].w = parseInt(a);
+    return;
+  }
+
+
+  let changeO = async (a = 0) => {
+    ob[ob.act].o = parseInt(a);
+    return;
+  }
+
+  let changeComm = async (a = "") => {
+    ob.com = a;
+    return;
+  }
+
+  let changeBall = async (a) => {
+    ob.tbls = a;
+    return;
+  }
+
+  let changeB = async (a) => {
+    ob[ob.act].b = parseInt(a);
+    return;
+  }
+
+  let changeRR = async (a) => {
+    ob[ob.act].cr = Math.round(a * 1e2) / 1e2;
+    return;
+  }
+
+  let changeRRR = async (a) => {
+
+    ob[ob.act].rr = 0;
+    return;
+  }
+
+  const addLastSix = async (run) => {
+    ob.lb.push(run)
+    return;
+  }
+
+  const resetSix = async (run) => {
+    ob.p_o = ob.lb
+    ob.lb = []
+    return;
+  }
+
+  const resetScore = async () => {
+    ob = { ...emt_ob }
+    sessionStorage.clear()
+    await setDomObj()
+    await setScore();
+    window.location.reload();
+    return;
+  }
+  const w_arr = ["0w", "1w", "2w", "3w", "4w", "5w", "6w"];
+
+  const revertScore = async () => {
+    if (ob.lb[ob.lb.length - 1].includes("wd") || ob.lb[ob.lb.length - 1].includes("nb")) {
+      ob.lb[ob.lb.length - 1] = parseInt(ob.lb[ob.lb.length - 1]) + 1;
+    } else {
+      if (ob[ob.act].b > 0) {
+        ob[ob.act].b = parseInt(ob[ob.act].b) - 1;
+      } else {
+        ob[ob.act].b = 5;
+        ob[ob.act].o = parseInt(ob[ob.act].o) - 1;
+      }
+    }
+    if (w_arr.includes(ob.lb[ob.lb.length - 1])) {
+      ob[ob.act].w = parseInt(ob[ob.act].w) - 1;
+    }
+    ob[ob.act].r = parseInt(ob[ob.act].r) - parseInt(ob.lb[ob.lb.length - 1]);
+    ob.lb.pop();
+    await setDomObj()
+    await setScore();
+    return;
+  }
+
+  const btn = document.querySelector(".btn")
+  const st = document.querySelector("#st")
+  const ns = document.querySelector("#ns")
+  const blr = document.querySelector("#blr")
+  const ing = document.querySelector("#ing")
+  const h = document.querySelector("#h")
+  const a = document.querySelector("#a")
+  const r = document.querySelector("#run")
+  const o = document.querySelector("#o")
+  const b = document.querySelector("#b")
+  const w = document.querySelector("#w")
+  const com = document.querySelector("#com")
+  const rr = document.querySelector("#rr")
+  const rrr = document.querySelector("#rrr")
+  const tbls = document.querySelector("#tbls")
+
+  let setComm = async (msg) => {
+    ob.com = msg;
+    await setDomObj()
+    await setScore()
+    return
+  }
+
+  const setDomObj = async () => {
+    ing.value = ob.act;
+    st.value = ob.st;
+    ns.value = ob.ns;
+    blr.value = ob.bl;
+    h.value = ob.h;
+    a.value = ob.a;
+    com.value = ob.com;
+    tbls.value = ob.tbls;
+
+    r.value = ob[ob.act] && ob[ob.act].r || 0;
+    o.value = ob[ob.act] && ob[ob.act].o || 0;
+    b.value = ob[ob.act] && ob[ob.act].b || 0;
+    w.value = ob[ob.act] && ob[ob.act].w || 0;
+    rr.value = ob[ob.act] && ob[ob.act].cr || 0;
+    rrr.value = ob[ob.act] && ob[ob.act].rr || 0;
+
+    d_obj.innerHTML = JSON.stringify(ob)
+    let htm = `<label class="label"> Last 6 Balls </<label>`
+    for (let i = 0; i < ob.lb.length; i++) {
+      htm += `<button class="btn btn-dark m-1 rounded"> ${ob.lb[i]} </<button>`
+    }
+    l_ball.innerHTML = htm;
+
+    let htm_ = `<label class="label"> Previous Over </<label>`
+
+    for (let i = 0; i < ob.p_o.length; i++) {
+      htm_ += `<button class="btn btn-dark m-1 rounded"> ${ob.p_o[i]} </<button>`
+    }
+
+    l_ball.innerHTML = htm;
+    p_ball.innerHTML = htm_;
+
+    sessionStorage.setItem("score_" + MID, JSON.stringify(ob))
+    return
+  }
+
+  st.addEventListener('change', async (e) => {
+    await changeStriker(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  ns.addEventListener('change', async (e) => {
+    await changeNoStriker(e.target.value)
+    setDomObj()
+    await setScore()
+  })
+
+  blr.addEventListener('change', async (e) => {
+    await changeBaller(e.target.value)
+    setDomObj()
+    await setScore()
+  })
+
+  ing.addEventListener('change', async (e) => {
+    await changeInning(e.target.value)
+    setDomObj()
+    await setScore()
+  })
+
+  h.addEventListener('change', async (e) => {
+    await changeHome(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  a.addEventListener('change', async (e) => {
+    await changeAway(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  r.addEventListener('change', async (e) => {
+    await changeRun(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  w.addEventListener('change', async (e) => {
+    await changeW(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  o.addEventListener('change', async (e) => {
+    await changeO(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  b.addEventListener('change', async (e) => {
+    await changeB(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  rr.addEventListener('change', async (e) => {
+    await changeRR(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  rrr.addEventListener('change', async (e) => {
+    await changeRRR(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  com.addEventListener('change', async (e) => {
+    await changeComm(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  tbls.addEventListener('change', async (e) => {
+    await changeBall(e.target.value)
+    await setDomObj()
+    await setScore()
+  })
+
+  const setScore = async (e) => {
+    socket.emit('set_score', {
+      mid: MID,
+      score: ob
+    });
+    return
+  }
+
+  socket.on('score', async function (s_data) {
+    if (ob.mid === MID) {
+      ob = s_data
+      await setDomObj()
+    }
+  })
+
+  setDomObj()
+
+
+</script>
+
+</html>

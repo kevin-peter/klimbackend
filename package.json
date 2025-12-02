@@ -1,0 +1,49 @@
+{
+  "name": "expressexample",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "start": "nodemon ./bin/www",
+    "start:prod": "NODE_ENV=production node dist/bundle.js",
+    "build": "webpack --mode production",
+    "build:run": "nodemon ./dist/server.js",
+    "dev": "webpack --mode development --watch"
+  },
+  "dependencies": {
+    "argon2": "^0.28.7",
+    "bcrypt": "^5.1.0",
+    "common": "^0.2.5",
+    "compression": "^1.7.4",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "dotenv": "^16.0.3",
+    "ejs": "~2.6.1",
+    "express": "^5.0.0-beta.1",
+    "express-fileupload": "^1.4.0",
+    "express-list-routes": "^1.1.5",
+    "http-errors": "~1.6.3",
+    "jsonwebtoken": "^8.5.1",
+    "moment": "^2.30.1",
+    "morgan": "~1.9.1",
+    "mysql": "^2.18.1",
+    "mysqldump": "^3.2.0",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.9",
+    "paseto": "^3.1.2",
+    "socket.io": "^2.5.0",
+    "socket.io-client": "^4.7.2",
+    "spdy": "^4.0.2",
+    "util": "^0.12.5"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "babel-loader": "^9.2.1",
+    "clean-webpack-plugin": "^4.0.0",
+    "parcel-bundler": "^1.12.5",
+    "webpack": "^5.96.1",
+    "webpack-cli": "^5.1.4",
+    "webpack-node-externals": "^3.0.0"
+  }
+}
